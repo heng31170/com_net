@@ -1,0 +1,163 @@
+<template>
+    <div>
+        <el-container style="height: 700px; border: 1px solid #eee">
+            <el-header
+                style="font-size: 40px; background-color: rgb(238, 241, 246); display: flex; justify-content: space-between; align-items: center;">
+                <span
+                    style="display: block; width: 100%; text-align: center; transform: translateX(-50%); margin-left: 50%;">不会写呀这</span>
+            </el-header>
+            <el-container>
+                <el-aside width="200px">
+                    <el-menu :default-openeds="['1', '3']">
+                        <el-submenu index="1">
+                            <template slot="title"><i class="el-icon-message"></i>课程管理</template>
+                            <el-menu-item index="1-2">
+                                <router-link to="/course">主页</router-link>
+                            </el-menu-item>
+                            <el-menu-item index="1-3">
+                                <router-link to="/teacher">教师</router-link>
+                            </el-menu-item>
+                            <el-menu-item index="1-4">
+                                <router-link to="/discussion">讨论区</router-link>
+                            </el-menu-item>
+                        </el-submenu>
+                    </el-menu>
+                </el-aside>
+                <el-main>
+                    <div class="discussion-container">
+                        <h2 class="discussion-title">讨论区 <el-button type="primary"
+                                @click="openAddQuestionDialog" style="float: right;">添加问题</el-button></h2>
+                        <div v-for="(topic, index) in discussionQuestions" :key="index" class="topic-item"
+                            @click="goToDiscussionDetail(topic.questionId)">
+                            <div class="topic-info">
+                                <span class="topic-title">{{ topic.content }}</span>
+                            </div>
+                            <div class="topic-footer">
+                                <span class="last-reply">问题创建时间：{{ topic.createdAt }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 新增问题对话框 -->
+                    <el-dialog title="添加问题" :visible.sync="dialogAddQuestionVisible">
+                        <el-form ref="form" :model="addQuestion" label-width="80px">
+                            <el-form-item label="问题">
+                                <el-input v-model="addQuestion.content"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="confirmAddQuestion">确认</el-button>
+                                <el-button @click="dialogAddQuestionVisible = false">取消</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-dialog>
+                    <!-- 结束新增问题对话框 -->
+                </el-main>
+            </el-container>
+        </el-container>
+    </div>
+</template>
+
+<script>
+import { API_URL } from '@/config';
+import axios from 'axios';
+
+export default {
+    data() {
+        return {
+            discussionQuestions: [],
+            addQuestion: {
+                questionId: '',
+                content: '',
+            },
+            dialogAddQuestionVisible: false // 控制对话框显示
+        };
+    },
+    methods: {
+        // 打开对话框并清空
+        openAddQuestionDialog() {
+            this.dialogAddQuestionVisible = true;
+            this.addQuestion.content = '';
+        },
+        // 添加问题的确认逻辑
+        confirmAddQuestion() {
+            if (!this.addQuestion.content.trim()) {
+                this.message.error("问题内容不能为空");
+            }
+            axios.post(`${API_URL}/question/add`,{ content: this.addQuestion.content })
+                .then(response => {
+                    this.dialogAddQuestionVisible = false;
+                    this.addQuestion.content = '';
+                    this.getAllQuestions();
+                    this.$message.success("讨论添加成功");
+                })
+                .catch((error) => {
+                    this.$message.error("添加失败: " + (error.response ? error.response.data.message : error.message));
+                });
+        },
+        // 获取全部问题
+        getAllQuestions() {
+            axios
+                .get(`${API_URL}/questions`)
+                .then(response => {
+                    // this.discussionQuestions = response.data;
+                    this.discussionQuestions = response.data.sort((a, b) => {
+                        return new Date(b.createdAt) - new Date(a.createdAt);
+                    });
+                })
+                .catch((error) => {
+                    this.$message.error("获取失败: " + (error.response ? error.response.data.message : error.message));
+                });
+        },
+        // 跳转页面
+        goToDiscussionDetail(questionId) {
+            sessionStorage.setItem('selectedQId', questionId);
+            window.open(`${window.location.origin}/discussion/${questionId}`, '_blank');
+        }
+    },
+    mounted() {
+        this.getAllQuestions();
+    },
+};
+</script>
+
+<style scoped>
+.discussion-container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.discussion-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.topic-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.topic-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.topic-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.topic-footer {
+    font-size: 14px;
+    color: #666;
+}
+</style>
