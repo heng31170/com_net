@@ -60,7 +60,7 @@ const routes = [
   },
   // 个人中心管理
   {
-    path: '/person',
+    path: '/person/:personId',
     name: 'person',
     component: () => import('../views/tlias/PersonView.vue')
   },

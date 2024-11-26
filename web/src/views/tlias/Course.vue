@@ -9,11 +9,10 @@
                 <el-menu :default-active="null" class="el-menu-demo" mode="horizontal" @select="handleSelect"
                     style="margin-right: 10%;" id="delBgc">
                     <el-submenu index="2">
-                        <template slot="title">Hello! {{ getCurUser.name }} <img :src="getCurUser.avatar"
-                                style="width: 40%; height: auto; border-radius: 50%;"></template>
+                        <template slot="title">Hello! {{ curUser.name || '游客' }}</template>
                         <el-menu-item index="2-1" @click="toPerson">个人中心</el-menu-item>
                         <el-menu-item index="2-2" @click="dialogUpdatePasswdVisible = true">修改密码</el-menu-item>
-                        <el-menu-item index="2-3" @click="unlogin">登出</el-menu-item>
+                        <el-menu-item index="2-3" @click="unlogin">{{ curUser  ? '登录': '登出' }}</el-menu-item>
                     </el-submenu>
                 </el-menu>
             </el-header>
@@ -58,8 +57,7 @@
                     <!-- 课程数据 -->
                     <template>
                         <div class="course-container">
-                            <div v-if="isLoading" class="loading">加载中...</div>
-                            <div v-else-if="CourseData.length === 0" class="no-data">暂无课程数据</div>
+                            <div v-if="CourseData.length === 0" class="no-data">暂无课程数据</div>
                             <div v-else>
                                 <div v-for="course in CourseData" :key="course.courseId" class="course-card"
                                     @click="goToCourseDetail(course.courseId)">
@@ -148,6 +146,7 @@ export default {
             // 课程数据
             CourseData: [],
             CourseId: '',
+            curUser: {},
 
             // 修改密码
             userPasswd: {
@@ -311,7 +310,9 @@ export default {
 
         // 个人中心
         toPerson() {
-            this.$router.push('/person'); // 个人中心路由
+            // this.$router.push('/person'); // 个人中心路由
+            sessionStorage.setItem('selectedPersonId',this.curUser.userId);
+            window.open(`${window.location.origin}/person/${this.curUser.userId}`,'_blank')
         },
 
         // 登出
@@ -339,10 +340,12 @@ export default {
                     //this.$message.error("查询失败: " + (error.response ? error.response.data.message : error.message));
                 });
         },
+
     },
 
     mounted() {
         this.getAllCourses();  // 获取所有课程数据
+        if(this.getCurUser !== null ) this.curUser = this.getCurUser;
     },
 };
 </script>

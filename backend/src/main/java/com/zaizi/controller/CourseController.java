@@ -24,6 +24,7 @@ public class CourseController {
     // 获取全部课程
     @GetMapping("/courses")
     public List<Course> getAllCourses() {
+        log.info("获取全部课程成功!");
         return courseService.getAllCourses();
     }
     // 条件查询课程

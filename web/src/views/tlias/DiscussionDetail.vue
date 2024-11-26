@@ -4,17 +4,29 @@
             <el-container>
                 <el-main>
                     <div class="discussion-container">
-                        <h2 class="discussion-title">{{ question.content }} <el-button type="primary"
-                                @click="openAddDiscussionDialog" style="float: right;">添加讨论</el-button></h2>
+                        <h2 class="discussion-title">
+                            {{ question.content }}
+                            <el-button type="primary" @click="openAddDiscussionDialog"
+                                style="float: right;">添加讨论</el-button>
+                        </h2>
+
                         <div v-for="(topic, index) in discussions" :key="index" class="topic-item">
+                            <div class="topic-user" @click="toPerson(topic.userId)">
+                                <span class="username">{{ topic.name }}</span> <!-- 显示用户名 -->
+                            </div>
                             <div class="topic-info">
                                 <span class="topic-title">{{ topic.content }}</span>
                             </div>
                             <div class="topic-footer">
-                                <span class="last-reply">回复时间：{{ topic.createdAt }}</span>
+                                <span class="last-reply">回复时间：{{ new Date(topic.createdAt).toLocaleString() }}</span>
+                                <el-button v-if="topic.userId === curUserId" type="danger"
+                                    @click.stop="deleteDiscussion(topic.discussionId)" style="margin-left: 10px;">
+                                    删除
+                                </el-button>
                             </div>
                         </div>
                     </div>
+
                     <!-- 新增讨论对话框 -->
                     <el-dialog title="添加讨论" :visible.sync="dialogAddDiscussionVisible">
                         <el-form ref="form" :model="addDiscussion" label-width="80px">
@@ -28,6 +40,20 @@
                         </el-form>
                     </el-dialog>
                     <!-- 结束讨论问题对话框 -->
+
+                    <!-- 删除确认对话框 -->
+                    <el-dialog title="确定删除该讨论?" :visible.sync="dialogDelDiscussionVisible">
+                        <el-form>
+                            <el-form-item>
+                                <span>您确定要删除这个讨论吗？</span>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="primary" @click="confirmDelDiscussion">确定</el-button>
+                                <el-button @click="dialogDelDiscussionVisible = false">取消</el-button>
+                            </el-form-item>
+                        </el-form>
+                    </el-dialog>
+                    <!-- 结束删除确认对话框 -->
                 </el-main>
             </el-container>
         </el-container>
@@ -37,21 +63,28 @@
 <script>
 import { API_URL } from '@/config';
 import axios from 'axios';
+import { mapGetters } from "vuex";
 
 export default {
     data() {
         return {
             //
+            curUserId: null,
             questionId: null,
             question: {},
             discussions: [
             ],
             dialogAddDiscussionVisible: false,
+            dialogDelDiscussionVisible: false, // 删除确认对话框可见性
             addDiscussion: {
                 questionId: '',
                 content: '',
             },
+            discussionToDelete: null, // 记录待删除的讨论ID
         };
+    },
+    computed: {
+        ...mapGetters(['getCurUser']),
     },
     methods: {
         // 打开对话框并清空
@@ -65,7 +98,7 @@ export default {
                 this.message.error("讨论内容不能为空");
             }
             axios.post(`${API_URL}/discussion/add`, {
-                content: this.addDiscussion.content, questionId: this.questionId
+                content: this.addDiscussion.content, questionId: this.questionId, userId: this.curUserId,
             })
                 .then(response => {
                     this.dialogAddDiscussionVisible = false;
@@ -94,7 +127,7 @@ export default {
             axios
                 .get(`${API_URL}/discussion/${this.questionId}`)
                 .then(response => {
-                    this.discussions = response.data.sort((a,b)=> {
+                    this.discussions = response.data.sort((a, b) => {
                         return new Date(b.createdAt) - new Date(a.createdAt);
                     });
                 })
@@ -102,6 +135,30 @@ export default {
                     this.$message.error("获取失败: " + (error.response ? error.response.data.message : error.message));
                 });
 
+        },
+        // 删除讨论对话框
+        deleteDiscussion(discussionId) {
+            this.discussionToDelete = discussionId;
+            this.dialogDelDiscussionVisible = true;
+        },
+        // 确认删除讨论
+        confirmDelDiscussion() {
+            axios.post(`${API_URL}/discussion/del/${this.discussionToDelete}`)
+                .then(() => {
+                    this.discussions = this.discussions.filter(topic => topic.discussionId !== this.discussionToDelete); // 过滤已删除的讨论
+                    this.dialogDelDiscussionVisible = false; // 关闭对话框
+                    this.discussionToDelete = null; // 清空待删除讨论ID
+                    this.$message.success("讨论删除成功!"); // 提示成功
+                })
+                .catch(error => {
+                    console.error("删除讨论失败:", error);
+                    this.$message.error("删除讨论失败!");
+                });
+        },
+        // 个人中心
+        toPerson(id) {
+            sessionStorage.setItem('selectedPersonId',id);
+            window.open(`${window.location.origin}/person/${id}`, '_blank')
         },
 
         // 跳转页面
@@ -114,6 +171,7 @@ export default {
         this.questionId = sessionStorage.getItem('selectedQId');
         this.getQuestion();
         this.getDiscussions();
+        this.curUserId = this.getCurUser.userId;
     },
 };
 </script>
@@ -131,6 +189,19 @@ export default {
     margin-bottom: 20px;
     text-align: center;
 }
+
+.topic-user {
+    font-size: 14px;
+    font-weight: bold;
+    color: #007bff;
+    /* 用户名颜色 */
+}
+
+.username {
+    margin-right: 10px;
+    /* 用户名与讨论内容之间的间距 */
+}
+
 
 .topic-item {
     background-color: #fff;

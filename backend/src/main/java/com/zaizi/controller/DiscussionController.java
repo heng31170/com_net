@@ -2,6 +2,7 @@ package com.zaizi.controller;
 
 
 import com.zaizi.pojo.Discussion;
+import com.zaizi.pojo.DiscussionWithUser;
 import com.zaizi.service.DiscussionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +15,17 @@ public class DiscussionController {
     private DiscussionService discussionService;
     // 获取讨论
     @GetMapping("/discussion/{questionId}")
-    public List<Discussion> getDiscussions(@PathVariable Integer questionId) {
+    public List<DiscussionWithUser> getDiscussions(@PathVariable Integer questionId) {
         return discussionService.getDiscussionsByQueId(questionId);
     }
     // 添加讨论
     @PostMapping("/discussion/add")
-    public void Discussion(@RequestBody Discussion discussion) {
+    public void addDiscussion(@RequestBody Discussion discussion) {
         discussionService.addDiscussion(discussion);
+    }
+    // 删除讨论
+    @PostMapping("/discussion/del/{discussionId}")
+    public void delDiscussion(@PathVariable Integer discussionId) {
+        discussionService.delDiscussion(discussionId);
     }
 }
