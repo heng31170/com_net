@@ -20,4 +20,8 @@ public class UserService extends ServiceImpl<UserMapper, User> {
     public User getUserById(Integer userId) {
         return getById(userId);
     }
+    // 修改密码
+    public void updatePasswd(User user) {
+        baseMapper.updatePasswd(user);
+    };
 }

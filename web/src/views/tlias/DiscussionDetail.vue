@@ -6,8 +6,10 @@
                     <div class="discussion-container">
                         <h2 class="discussion-title">
                             {{ question.content }}
-                            <el-button type="primary" @click="openAddDiscussionDialog"
-                                style="float: right;">添加讨论</el-button>
+                            <el-button type="primary" @click="exportTable" style="float: right;">导出讨论表</el-button>
+                            <el-button type="primary" @click="openAddDiscussionDialog" v-if="curUser.role"
+                                style="float: right;margin-right: 1%;">添加讨论</el-button>
+
                         </h2>
 
                         <div v-for="(topic, index) in discussions" :key="index" class="topic-item">
@@ -64,12 +66,15 @@
 import { API_URL } from '@/config';
 import axios from 'axios';
 import { mapGetters } from "vuex";
+import * as XLSX from 'xlsx'; // 确保引入 XLSX 库
+import moment from 'moment'; // 确保引入 moment.js
 
 export default {
     data() {
         return {
             //
             curUserId: null,
+            curUser: {},
             questionId: null,
             question: {},
             discussions: [
@@ -87,6 +92,22 @@ export default {
         ...mapGetters(['getCurUser']),
     },
     methods: {
+        // 导出表格
+        exportTable() {
+            // 过滤 discussions，只保留所需字段
+            const filteredData = this.discussions.map(topic => ({
+                讨论问题: this.question.content, // 添加问题内容
+                用户名: topic.name,
+                讨论内容: topic.content,
+                回复时间: moment(topic.createdAt).format('YYYY-MM-DD HH:mm:ss') // 格式化时间
+            }));
+
+            const today = moment().format('YYYY-MM-DD');
+            const wb = XLSX.utils.book_new(); // 创建新的工作簿
+            const ws = XLSX.utils.json_to_sheet(filteredData); // 将数据转换为工作表
+            XLSX.utils.book_append_sheet(wb, ws, '讨论表'); // 添加工作表到工作簿
+            XLSX.writeFile(wb, `${today}_讨论表_${this.question.content}.xlsx`); // 导出文件
+        },
         // 打开对话框并清空
         openAddDiscussionDialog() {
             this.addDiscussion.content = '';
@@ -157,7 +178,7 @@ export default {
         },
         // 个人中心
         toPerson(id) {
-            sessionStorage.setItem('selectedPersonId',id);
+            sessionStorage.setItem('selectedPersonId', id);
             window.open(`${window.location.origin}/person/${id}`, '_blank')
         },
 
@@ -172,6 +193,7 @@ export default {
         this.getQuestion();
         this.getDiscussions();
         this.curUserId = this.getCurUser.userId;
+        if (this.getCurUser !== null) this.curUser = this.getCurUser;
     },
 };
 </script>

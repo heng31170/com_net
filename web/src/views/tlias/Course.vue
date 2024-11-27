@@ -10,9 +10,10 @@
                     style="margin-right: 10%;" id="delBgc">
                     <el-submenu index="2">
                         <template slot="title">Hello! {{ curUser.name || '游客' }}</template>
-                        <el-menu-item index="2-1" @click="toPerson">个人中心</el-menu-item>
-                        <el-menu-item index="2-2" @click="dialogUpdatePasswdVisible = true">修改密码</el-menu-item>
-                        <el-menu-item index="2-3" @click="unlogin">{{ curUser  ? '登录': '登出' }}</el-menu-item>
+                        <el-menu-item index="2-1" @click="toPerson" v-if="curUser.role">个人中心</el-menu-item>
+                        <el-menu-item index="2-2" @click="dialogUpdatePasswdVisible = true"
+                            v-if="curUser.role">修改密码</el-menu-item>
+                        <el-menu-item index="2-3" @click="unlogin">{{ curUser.role ? '登出' : '登录' }}</el-menu-item>
                     </el-submenu>
                 </el-menu>
             </el-header>
@@ -49,7 +50,7 @@
                         <el-form-item>
                             <el-button type="primary" @click="queCourse">搜索</el-button>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item v-if="curUser.role === 'teacher'">
                             <el-button type="primary" @click="openAddCourseDialog">添加课程</el-button>
                         </el-form-item>
                     </el-form>
@@ -80,8 +81,7 @@
                         <el-form :model="userPasswd" status-icon :rules="rules" ref="userPasswd" label-width="100px"
                             class="demo-ruleForm">
                             <el-form-item label="原密码" prop="passwd">
-                                <el-input type="password" v-model="userPasswd.originPasswd"
-                                    autocomplete="off"></el-input>
+                                <el-input type="password" v-model="userPasswd.oldPasswd" autocomplete="off"></el-input>
                             </el-form-item>
                             <el-form-item label="新密码" prop="passwd">
                                 <el-input type="password" v-model="userPasswd.passwd" autocomplete="off"></el-input>
@@ -150,7 +150,7 @@ export default {
 
             // 修改密码
             userPasswd: {
-                originPasswd: '',
+                oldPasswd: '',
                 passwd: '',
                 confirmPasswd: '',
             },
@@ -261,47 +261,43 @@ export default {
         goToCourseDetail(courseId) {
             // 存储 courseId 到 sessionStorage
             sessionStorage.setItem('selectedCourseId', courseId);
-            window.open(`${window.location.origin}/course/${courseId}`, '_blank')
+            // window.open(`${window.location.origin}/course/${courseId}`, '_blank')
+            this.$router.push('/course/${courseId}');
         },
         // 更新密码
         updatePasswd() {
-            if (!this.userPasswd.originPasswd || !this.userPasswd.passwd || !this.userPasswd.confirmPasswd) {
+            if (!this.userPasswd.oldPasswd || !this.userPasswd.passwd || !this.userPasswd.confirmPasswd) {
                 this.$message.error("原密码、新密码和确认密码不能为空");
                 return;
             }
-
             if (this.userPasswd.passwd !== this.userPasswd.confirmPasswd) {
                 this.$message.error("新密码和确认密码不一致");
                 return;
             }
-
             if (this.userPasswd.passwd.includes(" ")) {
                 this.$message.error("新密码不能包含空格");
                 return;
             }
-
             axios
-                .post(`${API_URL}/api/passwd/update`, {
-                    id: this.curUser.userId, // 传递课程 ID
-                    originPasswd: this.userPasswd.originPasswd,
+                .post(`${API_URL}/passwd/update`, {
+                    userId: this.curUser.userId,
+                    oldPasswd: this.userPasswd.oldPasswd,
                     passwd: this.userPasswd.passwd,
                 })
-                .then(response => {
-                    if (response.data) {
-                        this.$message.success("密码更新成功,请重新登录!");
-                        this.dialogUpdatePasswdVisible = false; // 关闭对话框
-                        this.resetPasswdForm(); // 重置表单
-                        this.unlogin();
-                    }
+                .then((response) => {
+                    this.dialogUpdatePasswdVisible = false; // 关闭对话框
+                    this.resetPasswdForm(); // 重置表单
+                    this.unlogin();
+                    this.$message.success("密码更新成功,请重新登录!");
                 })
                 .catch(error => {
-                    this.$message.error(error.response?.data?.message || "密码更新失败");
+                    this.$message.error("密码更新失败");
                 });
         },
 
         // 重置密码表单
         resetPasswdForm() {
-            this.userPasswd.originPasswd = '';
+            this.userPasswd.oldPasswd = '';
             this.userPasswd.passwd = '';
             this.userPasswd.confirmPasswd = '';
         },
@@ -311,12 +307,14 @@ export default {
         // 个人中心
         toPerson() {
             // this.$router.push('/person'); // 个人中心路由
-            sessionStorage.setItem('selectedPersonId',this.curUser.userId);
-            window.open(`${window.location.origin}/person/${this.curUser.userId}`,'_blank')
+            sessionStorage.setItem('selectedPersonId', this.curUser.userId);
+            window.open(`${window.location.origin}/person/${this.curUser.userId}`, '_blank')
         },
 
         // 登出
         unlogin() {
+            // 清空用户数据
+            this.$store.dispatch('updateCurUser', null); // 或者使用适当的 mutation 来重置用户数据
             sessionStorage.removeItem('token');
             this.$router.push('/login').then(() => {
                 window.location.reload(); // 刷新页面
@@ -345,7 +343,9 @@ export default {
 
     mounted() {
         this.getAllCourses();  // 获取所有课程数据
-        if(this.getCurUser !== null ) this.curUser = this.getCurUser;
+        if (this.getCurUser !== null) this.curUser = this.getCurUser;
+        console.log(this.curUser);
+
     },
 };
 </script>

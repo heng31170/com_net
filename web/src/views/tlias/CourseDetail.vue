@@ -133,20 +133,30 @@ export default {
 
                 // POST请求添加评论
                 axios.post(`${API_URL}/comment/add`, newCommentData)
-                    .then(() => {
+                    .then(response => {
+                        console.log("评论添加成功:", response);
                         this.getCourseComments(); // 重新加载评论
                         this.newComment = ''; // 清空输入框
                         this.$message.success("评论添加成功!");
                     })
                     .catch(error => {
                         console.error("添加评论失败:", error);
+                        if (error.response) {
+                            if (error.response.status === 401) {
+                                this.$message.error("未登录，请登录后再试");
+                            } else {
+                                this.$message.error("添加评论失败: " + error.response.data);
+                            }
+                        } else {
+                            this.$message.error("添加评论失败: " + error.message);
+                        }
                     });
             }
         },
         // 个人中心
         toPerson(id) {
-            sessionStorage.setItem('selectedPersonId',id);
-            window.open(`${window.location.origin}/person/${id}`,'_blank')
+            sessionStorage.setItem('selectedPersonId', id);
+            window.open(`${window.location.origin}/person/${id}`, '_blank')
         },
 
         // 获取当前用户ID
@@ -250,7 +260,7 @@ export default {
 }
 
 .user-box {
-    cursor: pointer; 
+    cursor: pointer;
     float: left;
     background-color: #f0f0f0;
     /* 背景色 */

@@ -41,4 +41,9 @@ public class UserController {
     public User getUserById(@PathVariable Integer userId) {
         return userService.getUserById(userId);
     }
+    // 修改密码
+    @PostMapping("/passwd/update")
+    public void updatePasswd(@RequestBody User user) {
+        userService.updatePasswd(user);
+    }
 }

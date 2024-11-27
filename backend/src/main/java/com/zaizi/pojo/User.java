@@ -12,6 +12,7 @@ public class User {
     private Integer userId;
     private String username;
     private String passwd; // 修改为 passwd
+    private String oldPasswd;
     private String name;
     private String role; // 'teacher' 或 'student'
     private LocalDateTime createdAt;

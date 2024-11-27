@@ -26,7 +26,7 @@
                 <el-main>
                     <!-- 表单 搜索教师 -->
                     <el-form :inline="true" :model="searchTeacher" class="demo-form-inline">
-                        <el-form-item style="float: right;">
+                        <el-form-item style="float: right;" v-if="curUser.role ==='teacher'">
                             <el-button type="primary" @click="openAddTeacherDialog">添加教师</el-button>
                         </el-form-item>
                     </el-form>
@@ -86,10 +86,12 @@
 <script>
 import axios from "axios";
 import { API_URL } from "@/config";
+import { mapGetters } from "vuex";
 
 export default {
     data() {
         return {
+            curUser: {},
             // 教师数据
             teacherData: [
             ],
@@ -112,6 +114,9 @@ export default {
             dialogAddTeacherVisible: false, // 新增教师对话框可见性
             isLoading: false, // 加载状态
         };
+    },
+    computed: {
+        ...mapGetters(['getCurUser']),
     },
 
     methods: {
@@ -174,7 +179,7 @@ export default {
                     this.dialogAddTeacherVisible = false;
                 })
                 .catch((error) => {
-                    console.error("添加失败:", error);
+                    this.message.error("添加失败:", error);
                 });
         },
         // 获取所有教师
@@ -195,12 +200,14 @@ export default {
         // 跳转到教师详情页
         goToTeacherDetail(teacherId) {
             sessionStorage.setItem('selectedTeacherId', teacherId);
-            window.open(`${window.location.origin}/teacher/${teacherId}`, '_blank');
+            // window.open(`${window.location.origin}/teacher/${teacherId}`, '_blank');
+            this.$router.push('/teacher/${teacherId}');
         },
     },
 
     mounted() {
         this.getAllTeachers();  // 获取所有教师数据
+        if (this.getCurUser !== null) this.curUser = this.getCurUser;
     },
 };
 </script>

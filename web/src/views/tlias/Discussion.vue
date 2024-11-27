@@ -27,7 +27,7 @@
                     <div class="discussion-container">
                         <h2 class="discussion-title">
                             讨论区
-                            <el-button type="primary" @click="openAddQuestionDialog" style="float: right;">添加问题</el-button>
+                            <el-button type="primary" @click="openAddQuestionDialog" style="float: right;" v-if="curUser.role">添加问题</el-button>
                         </h2>
 
                         <div v-for="(topic, index) in discussionQuestions" :key="index" class="topic-item" @click="goToDiscussionDetail(topic.questionId)">
@@ -88,6 +88,7 @@ export default {
             dialogDelTopicVisible: false,
             topicToDelete: null, // 记录待删除的问题ID
             curUserId: null,
+            curUser: {},
             discussionQuestions: [],
             addQuestion: {
                 questionId: '',
@@ -137,7 +138,8 @@ export default {
         // 跳转页面
         goToDiscussionDetail(questionId) {
             sessionStorage.setItem('selectedQId', questionId);
-            window.open(`${window.location.origin}/discussion/${questionId}`, '_blank');
+            // window.open(`${window.location.origin}/discussion/${questionId}`, '_blank');
+            this.$router.push('/discussion/${questionId}');
         },
         // 删除问题对话框
         deleteTopic(questionId) {
@@ -167,6 +169,7 @@ export default {
     mounted() {
         this.getAllQuestions();
         this.curUserId = this.getCurUser.userId;
+        if (this.getCurUser !== null) this.curUser = this.getCurUser;
     },
 };
 </script>
