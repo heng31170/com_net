@@ -12,8 +12,6 @@ import java.util.List;
 @Mapper
 public interface DiscussionMapper extends BaseMapper<Discussion> {
     // 根据问题id获取讨论
-//    @Select("select * from discussions where question_id = #{questionsId}")
-//    List<Discussion> getDiscussionsByQueId(Integer questionsId);
     @Select("SELECT d.discussion_id, d.question_id, d.user_id, d.content, d.created_at, u.username, u.name " +
             "FROM discussions d " +
             "JOIN users u ON d.user_id = u.user_id " +

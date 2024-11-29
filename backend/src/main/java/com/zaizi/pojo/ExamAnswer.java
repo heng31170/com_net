@@ -1,14 +1,20 @@
 package com.zaizi.pojo;
 
+
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data
+@TableName("exam_answers")
 public class ExamAnswer {
-    private Integer answerId;
-    private Integer examId;
-    private Integer studentId;
-    private String questionText;
-    private String studentAnswer;
-    private LocalDateTime submittedAt;
+    @TableId
+    private Integer answerId;   // 答案ID
+    private Integer examId;     // 指向考试表的考试ID
+    private Integer userId;     // 答题的用户ID
+    private String content;      // 答案内容
+    private LocalDateTime createdAt; // 创建时间
+    private Integer score;
 }

@@ -13,7 +13,6 @@ public class CORSConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 // 设置允许跨域请求的域名
                 .allowedOriginPatterns("*") // 允许所有域名
-                .allowedOrigins("http://localhost:8081") // 允许的前端地址
                 // 是否允许 cookie
                 .allowCredentials(true)
                 // 设置允许的请求方式

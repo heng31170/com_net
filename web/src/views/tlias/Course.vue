@@ -31,6 +31,9 @@
                             <el-menu-item index="1-4"> <!-- 添加讨论区 -->
                                 <router-link to="/discussion">讨论区</router-link>
                             </el-menu-item>
+                            <el-menu-item index="1-5"> <!-- 添加讨论区 -->
+                                <router-link to="/exam">考试</router-link>
+                            </el-menu-item>
                         </el-submenu>
                     </el-menu>
                 </el-aside>
@@ -113,7 +116,7 @@
                                 </el-upload>
                             </el-form-item>
                             <el-form-item label="课程简介">
-                                <el-input v-model="addCourse.description"></el-input>
+                                <el-input v-model="addCourse.description" type="textarea" rows="10"></el-input>
                             </el-form-item>
                             <el-form-item label="课程类别">
                                 <el-select v-model="addCourse.category" placeholder="请选择课程类别">

@@ -20,6 +20,9 @@
                             <el-menu-item index="1-4"> <!-- 添加讨论区 -->
                                 <router-link to="/discussion">讨论区</router-link>
                             </el-menu-item>
+                            <el-menu-item index="1-5"> <!-- 添加讨论区 -->
+                                <router-link to="/exam">考试</router-link>
+                            </el-menu-item>
                         </el-submenu>
                     </el-menu>
                 </el-aside>
@@ -67,7 +70,7 @@
                                 </el-upload>
                             </el-form-item>
                             <el-form-item label="教师简介">
-                                <el-input v-model="addTeacher.bio"></el-input>
+                                <el-input v-model="addTeacher.bio" type="textarea" rows="10"></el-input>
                             </el-form-item>
                             <el-form-item>
                                 <el-button type="primary" @click="confirmAddTeacher">确定</el-button>

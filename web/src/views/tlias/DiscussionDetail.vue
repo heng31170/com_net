@@ -33,7 +33,7 @@
                     <el-dialog title="添加讨论" :visible.sync="dialogAddDiscussionVisible">
                         <el-form ref="form" :model="addDiscussion" label-width="80px">
                             <el-form-item label="讨论">
-                                <el-input v-model="addDiscussion.content"></el-input>
+                                <el-input v-model="addDiscussion.content" type="textarea" rows="5"></el-input>
                             </el-form-item>
                             <el-form-item>
                                 <el-button type="primary" @click="confirmAddDiscussion">确认</el-button>

@@ -45,6 +45,19 @@ const routes = [
     name: 'discussionDetail',
     component: () => import('../views/tlias/DiscussionDetail.vue') 
   },
+     // 考试管理
+     {
+      path: '/exam',
+      name: 'exam',
+      component: () => import('../views/tlias/Exam.vue')
+    },
+    // 考试详情管理
+    {
+      path: '/exam/:examId',
+      name: 'examDetail',
+      component: () => import('../views/tlias/ExamDetail.vue') 
+    },
+  
 
   // 登录管理
   {
@@ -64,12 +77,6 @@ const routes = [
     name: 'person',
     component: () => import('../views/tlias/PersonView.vue')
   },
-  // 普通员工管理
-  {
-    path: '/cemp',
-    name: 'cemp',
-    component: () => import('../views/tlias/CommonEmp.vue')
-  }
 ]
 
 const router = new VueRouter({

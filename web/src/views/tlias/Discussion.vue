@@ -20,6 +20,9 @@
                             <el-menu-item index="1-4">
                                 <router-link to="/discussion">讨论区</router-link>
                             </el-menu-item>
+                            <el-menu-item index="1-5"> <!-- 添加讨论区 -->
+                                <router-link to="/exam">考试</router-link>
+                            </el-menu-item>
                         </el-submenu>
                     </el-menu>
                 </el-aside>
