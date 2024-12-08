@@ -1,5 +1,6 @@
 package com.zaizi.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zaizi.mapper.CourseMapper;
 import com.zaizi.pojo.Course;
@@ -22,10 +23,21 @@ public class CourseService extends ServiceImpl<CourseMapper, Course> {
     public void addCourse(Course course) {
         courseMapper.addCourse(course);
     }
-    // 条件查询课程
+    // 条件查询课程  xml
+//    public List<Course> getCourses(String title,String category) {
+//        List<Course> courses = courseMapper.getCourses(title,category);
+//        return courses;
+//    }
+    // mybatisPlus条件查询
     public List<Course> getCourses(String title,String category) {
-        List<Course> courses = courseMapper.getCourses(title,category);
-        return courses;
+        QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
+        if(title != null && !title.isEmpty()) {
+            queryWrapper.like("title",title);
+        }
+        if(category != null && !category.isEmpty()) {
+            queryWrapper.eq("category",category);
+        }
+        return this.list(queryWrapper);
     }
     // 根据id获取课程
     public Course getCourseById(Integer courseId) {

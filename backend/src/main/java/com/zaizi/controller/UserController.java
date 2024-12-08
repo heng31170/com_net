@@ -34,7 +34,7 @@ public class UserController {
             String jwt = JwtUtils.generateJwt(claims);
             return ResponseEntity.ok(Map.of("status","success to login","user",u,"jwt",jwt));
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("登录失败，用户名或密码错误");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("登录失败，用户名或密码或身份错误");
     }
     // 根据id获取用户
     @GetMapping("/user/{userId}")

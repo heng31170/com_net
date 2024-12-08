@@ -11,7 +11,7 @@
                     <el-submenu index="2">
                         <template slot="title">Hello! {{ curUser.name || '游客' }}</template>
                         <el-menu-item index="2-1" @click="toPerson" v-if="curUser.role">个人中心</el-menu-item>
-                        <el-menu-item index="2-2" @click="dialogUpdatePasswdVisible = true"
+                        <el-menu-item index="2-2" @click="openDialogUpdatePasswdVisible"
                             v-if="curUser.role">修改密码</el-menu-item>
                         <el-menu-item index="2-3" @click="unlogin">{{ curUser.role ? '登出' : '登录' }}</el-menu-item>
                     </el-submenu>
@@ -267,6 +267,11 @@ export default {
             // window.open(`${window.location.origin}/course/${courseId}`, '_blank')
             this.$router.push('/course/${courseId}');
         },
+        // 弹出更新密码对话框
+        openDialogUpdatePasswdVisible() {
+            this.dialogUpdatePasswdVisible = true;
+            this.resetPasswdForm();
+        }, 
         // 更新密码
         updatePasswd() {
             if (!this.userPasswd.oldPasswd || !this.userPasswd.passwd || !this.userPasswd.confirmPasswd) {

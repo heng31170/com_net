@@ -9,22 +9,27 @@
                         <el-input v-model="loginForm.username" autocomplete="off" @keyup.enter.native="submitLogin">
                             <template #append>
                                 <el-button v-if="loginForm.username" icon="el-icon-close" @click="clearUsername"
-                                    size="small" class="clear-button">
-                                </el-button>
+                                    size="small" class="clear-button"></el-button>
                             </template>
                         </el-input>
                     </el-form-item>
                     <el-form-item label="密码" prop="passwd">
-                        <el-input v-model="loginForm.passwd" :type="passwordFieldType" autocomplete="off" @keyup.enter.native="submitLogin">
+                        <el-input v-model="loginForm.passwd" :type="passwordFieldType" autocomplete="off"
+                            @keyup.enter.native="submitLogin">
                             <template #append>
                                 <el-button icon="el-icon-view" @click="togglePasswordVisibility" size="small"
-                                    class="toggle-password-button">
-                                </el-button>
+                                    class="toggle-password-button"></el-button>
                                 <el-button v-if="loginForm.passwd" icon="el-icon-close" @click="clearPassword"
-                                    size="small" class="clear-button">
-                                </el-button>
+                                    size="small" class="clear-button"></el-button>
                             </template>
                         </el-input>
+                    </el-form-item>
+                    <el-form-item label="身份" prop="role">
+                        <el-select v-model="loginForm.role" placeholder="请选择身份" @change="handleRoleChange">
+                            <el-option label="教师" value="teacher"></el-option>
+                            <el-option label="学生" value="student"></el-option>
+                            <el-option label="游客" value="tourist"></el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item>
                         <el-checkbox v-model="rememberMe" style="float: left;"> 保存密码</el-checkbox>
@@ -46,7 +51,8 @@ export default {
         return {
             loginForm: {
                 username: '',
-                passwd: ''
+                passwd: '',
+                role: '',
             },
             rememberMe: false,
             passwordFieldType: 'password',
@@ -56,6 +62,9 @@ export default {
                 ],
                 passwd: [
                     { required: true, message: '请输入密码', trigger: 'blur' }
+                ],
+                role: [
+                    { required: true, message: '请选择身份', trigger: 'blur' }
                 ]
             }
         };
@@ -63,6 +72,7 @@ export default {
     created() {
         const savedUsername = sessionStorage.getItem('savedUsername');
         const savedPassword = sessionStorage.getItem('savedPassword');
+        const savedRole = sessionStorage.getItem('savedRole');
         const savedRememberMe = sessionStorage.getItem('rememberMe') === 'true';
 
         if (savedUsername) {
@@ -71,23 +81,46 @@ export default {
         if (savedPassword) {
             this.loginForm.passwd = savedPassword;
         }
+        if (savedRole) {
+            this.loginForm.role = savedRole;
+        }
         this.rememberMe = savedRememberMe;
     },
     methods: {
+        handleRoleChange(value) {
+            if (value === 'tourist') {
+                this.loginForm.username = '';
+                this.loginForm.passwd = '';
+                this.rememberMe = false;
+            }
+        },
         submitLogin() {
+            if (this.loginForm.role === 'tourist') {
+                sessionStorage.removeItem('savedUsername');
+                sessionStorage.removeItem('savedPassword');
+                sessionStorage.removeItem('savedRole'); // 移除保存的身份
+                sessionStorage.setItem('rememberMe', 'false');
+                this.$router.push('/course').then(() => {
+                    window.location.reload(); // 刷新页面
+                });
+                return;
+            }
             axios.post(`${API_URL}/login`, this.loginForm)
+
                 .then(response => {
                     this.$message.success("登录成功!");
                     this.$store.dispatch('updateCurUser', response.data.user);
-                    sessionStorage.setItem('token', response.data.jwt);  //                     
+                    sessionStorage.setItem('token', response.data.jwt);
 
                     if (this.rememberMe) {
                         sessionStorage.setItem('savedUsername', this.loginForm.username);
                         sessionStorage.setItem('savedPassword', this.loginForm.passwd);
+                        sessionStorage.setItem('savedRole', this.loginForm.role); // 同时保存身份
                         sessionStorage.setItem('rememberMe', 'true');
                     } else {
                         sessionStorage.removeItem('savedUsername');
                         sessionStorage.removeItem('savedPassword');
+                        sessionStorage.removeItem('savedRole'); // 移除保存的身份
                         sessionStorage.setItem('rememberMe', 'false');
                     }
 
@@ -96,7 +129,7 @@ export default {
                     });
                 })
                 .catch(error => {
-                    this.$message.error('登录失败!账号或密码错误');
+                    this.$message.error('登录失败! 账号或密码或身份错误');
                 });
         },
         goToRegister() {

@@ -32,7 +32,6 @@ public class TeacherController {
         return teacherService.getTeacherById(teacherId);
     }
     // 添加教师
-    // 添加课程
     @PostMapping("/teacher/add")
     public ResponseEntity<?> addTeacher(@RequestParam(value = "file", required = false) MultipartFile file,
                                        @RequestParam("json") String json) {

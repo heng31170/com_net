@@ -6,9 +6,6 @@ import com.zaizi.pojo.Course;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 @Mapper
 public interface CourseMapper extends BaseMapper<Course> {
@@ -17,5 +14,5 @@ public interface CourseMapper extends BaseMapper<Course> {
     @Options(useGeneratedKeys = true,keyProperty = "courseId")
     void addCourse(Course course);
     // 条件查询课程
-    List<Course> getCourses(@Param("title") String title,@Param("category") String category);
+//    List<Course> getCourses(@Param("title") String title,@Param("category") String category);
 }

@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
     // 检测登录
-    @Select("select * from users where username = #{username} and passwd = #{passwd}")
+    @Select("select * from users where username = #{username} and passwd = #{passwd} and role = #{role}")
     User getUserByUserNameAndPasswd(User user);
     // 添加用户
     @Insert("insert into users (username,passwd,name,role) values (#{username},#{passwd},#{name},#{role})")

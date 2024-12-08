@@ -1,6 +1,6 @@
 package com.zaizi.service;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zaizi.mapper.ExamAnsMapper;
 import com.zaizi.pojo.ExamAnswer;
@@ -26,13 +26,19 @@ public class ExamAnsService extends ServiceImpl<ExamAnsMapper, ExamAnswer> {
     }
     // 更新评分
     public boolean updateScore(Integer answerId, Integer score) {
-        ExamAnswer examAnswer = new ExamAnswer();
-        examAnswer.setScore(score); // 设置新评分
+//        ExamAnswer examAnswer = new ExamAnswer();
+//        examAnswer.setScore(score); // 设置新评分
+//
+//        // 使用 UpdateWrapper 设置条件
+//        UpdateWrapper<ExamAnswer> updateWrapper = new UpdateWrapper<>();
+//        updateWrapper.eq("answer_id", answerId); // 根据 answerId 更新
+//
+//        return this.update(examAnswer, updateWrapper); // 返回更新结果
 
-        // 使用 UpdateWrapper 设置条件
-        UpdateWrapper<ExamAnswer> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("answer_id", answerId); // 根据 answerId 更新
-
-        return this.update(examAnswer, updateWrapper); // 返回更新结果
+        // Lambda 更新示例
+        LambdaUpdateWrapper<ExamAnswer> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(ExamAnswer::getAnswerId,answerId)
+                .set(ExamAnswer::getScore,score);
+        return this.update(updateWrapper);
     }
 }
