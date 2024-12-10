@@ -43,7 +43,11 @@ public class UserController {
     }
     // 修改密码
     @PostMapping("/passwd/update")
-    public void updatePasswd(@RequestBody User user) {
-        userService.updatePasswd(user);
+    public ResponseEntity<String> updatePasswd(@RequestBody User user) {
+            int res = userService.updatePasswd(user);
+            if(res == 1) {
+                return ResponseEntity.ok("密码更新成功");
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("密码更新失败: ");
     }
 }

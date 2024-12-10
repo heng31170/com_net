@@ -4,7 +4,7 @@
             <el-header
                 style="font-size: 40px; background-color: rgb(238, 241, 246); display: flex; justify-content: space-between; align-items: center;">
                 <span
-                    style="display: block; width: 100%; text-align: center; transform: translateX(-50%); margin-left: 50%;">不会写呀这</span>
+                    style="display: block; width: 100%; text-align: center; transform: translateX(-50%); margin-left: 50%;">在线教育平台系统</span>
                 <!-- 菜单放置在右侧 -->
                 <el-menu :default-active="null" class="el-menu-demo" mode="horizontal" @select="handleSelect"
                     style="margin-right: 10%;" id="delBgc">
@@ -299,7 +299,7 @@ export default {
                     this.$message.success("密码更新成功,请重新登录!");
                 })
                 .catch(error => {
-                    this.$message.error("密码更新失败");
+                    this.$message.error("密码更新失败,原密码错误");
                 });
         },
 

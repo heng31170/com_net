@@ -33,6 +33,16 @@ public class CourseController {
                                    @RequestParam(value = "category",required = false) String category) {
         return courseService.getCourses(title, category);
     };
+    // 根据id删除课程
+    @PostMapping("/course/del/{courseId}")
+    public ResponseEntity<?> delCourse(@PathVariable Integer courseId) {
+        int res = courseService.delCourseById(courseId);
+        if(res == 1) {
+            return ResponseEntity.ok("删除成功!");
+        }
+        return ResponseEntity.badRequest().body("删除失败!");
+    }
+
     // 根据id查询课程
     @GetMapping("/course/{courseId}")
     public Course getCourseById(@PathVariable Integer courseId) {

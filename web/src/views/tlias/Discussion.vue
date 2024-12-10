@@ -4,7 +4,7 @@
             <el-header
                 style="font-size: 40px; background-color: rgb(238, 241, 246); display: flex; justify-content: space-between; align-items: center;">
                 <span
-                    style="display: block; width: 100%; text-align: center; transform: translateX(-50%); margin-left: 50%;">不会写呀这</span>
+                    style="display: block; width: 100%; text-align: center; transform: translateX(-50%); margin-left: 50%;">讨论区</span>
             </el-header>
             <el-container>
                 <el-aside width="200px">

@@ -43,4 +43,8 @@ public class CourseService extends ServiceImpl<CourseMapper, Course> {
     public Course getCourseById(Integer courseId) {
         return this.getById(courseId);
     }
+    // 根据id删除课程
+    public int delCourseById(Integer courseId) {
+        return this.baseMapper.deleteById(courseId);
+    }
 }

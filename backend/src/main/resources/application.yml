@@ -36,19 +36,14 @@ logging:
 server:
   port: 5678
 
-# 配置PageHelper
-pagehelper:
-  helper-dialect: mysql
-  reasonable: true
-  support-methods-arguments: true
-  params: count=countSql
 
 # mybatis_plus配置
 mybatis-plus:
   mapper-locations: classpath:/mappers/**/*xml
   type-aliases-package: com.zaizi.pojo
 
-# 文件上传地址
+# 文件上传地址  upload改成该目录下static的绝对路径
 file:
   upload-dir: E:/Desktop/ComNetCur/backend/src/main/resources/static/
+  #upload-dir: ./static/
   serve-dir: http://127.0.0.1:5678/

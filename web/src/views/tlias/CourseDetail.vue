@@ -119,7 +119,7 @@ export default {
 
         // 播放课程
         playCourse() {
-            window.open("https://www.bilibili.com/video/BV19xDFYXEAj/?spm_id_from=333.1007.tianma.1-1-1.click&vd_source=e16291cbe3a38a8ff3f91f63eb0b11c9", "_blank");
+            window.open("https://www.bilibili.com/video/BV1S142197x7/?p=23&spm_id_from=333.1007.top_right_bar_window_history.content.click&vd_source=e16291cbe3a38a8ff3f91f63eb0b11c9", "_blank");
         },
 
         // 添加评论

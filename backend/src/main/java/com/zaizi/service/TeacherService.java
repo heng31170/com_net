@@ -24,4 +24,8 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
     public void addTeacher(Teacher teacher) {
         teacherMapper.addTeacher(teacher);
     }
+    // 根据id删除教师
+    public int delTeacher(Integer teacherId) {
+        return this.baseMapper.deleteById(teacherId);
+    }
 }

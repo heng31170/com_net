@@ -31,6 +31,15 @@ public class TeacherController {
     public Teacher getTeacherById(@PathVariable Integer teacherId) {
         return teacherService.getTeacherById(teacherId);
     }
+    // 根据id删除教师
+    @PostMapping("/teacher/del/{teacherId}")
+    public ResponseEntity<?> delTeacher(@PathVariable Integer teacherId) {
+        int res = teacherService.delTeacher(teacherId);
+        if(res == 1) {
+            return ResponseEntity.ok("删除成功!");
+        }
+        return ResponseEntity.badRequest().body("删除失败!");
+    }
     // 添加教师
     @PostMapping("/teacher/add")
     public ResponseEntity<?> addTeacher(@RequestParam(value = "file", required = false) MultipartFile file,

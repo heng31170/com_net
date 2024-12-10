@@ -77,6 +77,18 @@ const routes = [
     name: 'person',
     component: () => import('../views/tlias/PersonView.vue')
   },
+    // 课程后台管理
+    {
+      path: '/courseAdmin',
+      name: 'courseAdmin',
+      component: () => import('../views/tlias/Admin_Course.vue')
+    },
+    // 教师后台管理
+    {
+      path: '/teacherAdmin',
+      name: 'teacherAdmin',
+      component: () => import('../views/tlias/Admin_Teacher.vue')
+    },
 ]
 
 const router = new VueRouter({

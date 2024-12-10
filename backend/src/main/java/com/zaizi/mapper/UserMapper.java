@@ -16,5 +16,5 @@ public interface UserMapper extends BaseMapper<User> {
     void addUser(User user);
     // 修改密码
     @Update("update  users set passwd = #{passwd} where passwd = #{oldPasswd} and user_id = #{userId}")
-    void updatePasswd(User user);
+    int updatePasswd(User user);
 }

@@ -28,6 +28,7 @@
                         <el-select v-model="loginForm.role" placeholder="请选择身份" @change="handleRoleChange">
                             <el-option label="教师" value="teacher"></el-option>
                             <el-option label="学生" value="student"></el-option>
+                            <el-option label="管理员" value="admin"></el-option>
                             <el-option label="游客" value="tourist"></el-option>
                         </el-select>
                     </el-form-item>
@@ -65,7 +66,8 @@ export default {
                 ],
                 role: [
                     { required: true, message: '请选择身份', trigger: 'blur' }
-                ]
+                ],
+
             }
         };
     },
@@ -124,9 +126,16 @@ export default {
                         sessionStorage.setItem('rememberMe', 'false');
                     }
 
-                    this.$router.push('/course').then(() => {
-                        window.location.reload(); // 刷新页面
-                    });
+                    // 判断用户角色
+                    if (response.data.user.role === 'admin') {
+                        this.$router.push('/courseAdmin').then(() => {
+                            window.location.reload(); // 刷新页面
+                        });
+                    } else {
+                        this.$router.push('/course').then(() => {
+                            window.location.reload(); // 刷新页面
+                        });
+                    }
                 })
                 .catch(error => {
                     this.$message.error('登录失败! 账号或密码或身份错误');
